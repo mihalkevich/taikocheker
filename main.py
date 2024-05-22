@@ -1,9 +1,19 @@
 import requests
+import random
+
+# Список возможных User-Agent
+USER_AGENTS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1'
+]
 
 def get_address_info(address):
     url = f"https://trailblazer.hekla.taiko.xyz/api/address?address={address}"
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': random.choice(USER_AGENTS)
     }
     try:
         response = requests.get(url, headers=headers)
@@ -42,6 +52,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         return
 
     total_value = 0
+    eligible_accounts = 0
     
     for index, address in enumerate(addresses, start=1):
         address_info = get_address_info(address)
@@ -50,8 +61,11 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         # Добавление value к общей сумме, если запрос успешен
         if isinstance(address_info, dict) and 'value' in address_info:
             total_value += address_info['value']
+            if address_info['value'] > 0:
+                eligible_accounts += 1
     
     print(f"Всего токенов: {total_value}")
+    print(f"Количество eligible аккаунтов (value > 0): {eligible_accounts}")
 
 if __name__ == "__main__":
     main()
